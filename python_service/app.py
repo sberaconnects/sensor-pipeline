@@ -1,6 +1,5 @@
-import bootstrap
+import bootstrap  # noqa: F401
 
-import threading
 import time
 import os
 from flask_socketio import SocketIO
