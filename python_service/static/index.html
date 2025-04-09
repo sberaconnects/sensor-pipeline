@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Sensor Chart Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📊 Real-Time Temperature Chart</h1>
+    <canvas id="tempChart" width="800" height="300"></canvas>
+
+    <script>
+        const socket = io();
+        socket.on("connect", () => {
+            console.log("✅ Connected to WebSocket");
+        });
+
+        const ctx = document.getElementById("tempChart").getContext("2d");
+        const labels = [];
+        const datasetColors = {
+            temperature: "rgb(255, 99, 132)",
+            torque: "rgb(54, 162, 235)",
+            pressure: "rgb(255, 206, 86)",
+            load: "rgb(75, 192, 192)",
+            vibration: "rgb(153, 102, 255)",
+            voltage: "rgb(255, 159, 64)"
+        };
+
+        const sensorKeys = Object.keys(datasetColors);
+
+        const datasets = sensorKeys.map((key) => ({
+            label: key.charAt(0).toUpperCase() + key.slice(1),
+            data: [],
+            borderColor: datasetColors[key],
+            backgroundColor: datasetColors[key] + "33",  // light transparent
+            tension: 0.3
+        }));
+
+        const chartData = {
+            labels: [],
+            datasets: datasets
+        };
+
+        const config = {
+            type: "line",
+            data: chartData,
+            options: {
+                responsive: true,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        };
+
+        const chart = new Chart(ctx, config);
+
+        fetch("/sensor-history")
+            .then(res => res.json())
+            .then(history => {
+                history.forEach((entry, i) => {
+                    const time = new Date(Date.now() - (history.length - i) * 1000).toLocaleTimeString();
+                    chartData.labels.push(time);
+                    sensorKeys.forEach((key, j) => {
+                        chartData.datasets[j].data.push(entry[key]);
+                    });
+                });
+                chart.update();
+            });
+
+
+        socket.on("sensor_update", (msg) => {
+            console.log("📡 Data received:", msg);
+            const now = new Date().toLocaleTimeString();
+            chartData.labels.push(now);
+
+            sensorKeys.forEach((key, i) => {
+                chartData.datasets[i].data.push(msg[key]);
+                if (chartData.datasets[i].data.length > 20) {
+                    chartData.datasets[i].data.shift();
+                }
+            });
+
+            if (chartData.labels.length > 20) {
+                chartData.labels.shift();
+            }
+
+            chart.update();
+        });
+    </script>
+
+</body>
+
+</html>

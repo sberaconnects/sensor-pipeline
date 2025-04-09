@@ -1,0 +1,46 @@
+name: Sensor App CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🛠️ Build C Sensor Engine
+        run: |
+          cd sensor_engine
+          make
+          ./sensor & sleep 2
+          cat data.txt
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 📦 Install Python dependencies
+        run: |
+          cd python_service
+          pip install -r requirements.txt
+
+      - name: 🔍 Lint Python
+        run: |
+          pip install flake8
+          flake8 python_service
+
+      - name: 🚦 Start Python WebSocket server (test only)
+        run: |
+          cd python_service
+          nohup python app.py &
+          sleep 5
+          curl -s http://localhost:5000/sensor-data || true
+
+

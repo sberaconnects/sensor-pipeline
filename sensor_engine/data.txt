@@ -1,0 +1,10 @@
+temperature=27.19, torque=77.79, pressure=34.65, load=171.47, vibration=0.98, voltage=14.11
+temperature=39.40, torque=13.71, pressure=29.04, load=285.30, vibration=1.14, voltage=13.76
+temperature=37.29, torque=27.81, pressure=28.47, load=224.43, vibration=0.07, voltage=13.89
+temperature=39.15, torque=29.19, pressure=29.82, load=425.94, vibration=0.26, voltage=14.16
+temperature=23.66, torque=72.30, pressure=30.79, load=174.72, vibration=0.40, voltage=13.63
+temperature=22.41, torque=53.87, pressure=32.91, load=480.65, vibration=1.21, voltage=12.39
+temperature=34.87, torque=64.26, pressure=30.59, load=449.61, vibration=0.36, voltage=11.78
+temperature=31.20, torque=17.20, pressure=30.72, load=347.74, vibration=0.62, voltage=12.77
+temperature=26.87, torque=36.01, pressure=33.27, load=328.65, vibration=0.28, voltage=14.24
+temperature=27.54, torque=35.86, pressure=33.77, load=389.98, vibration=0.83, voltage=14.76
